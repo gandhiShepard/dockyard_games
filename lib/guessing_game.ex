@@ -26,9 +26,9 @@ defmodule Games.GuessingGame do
     play(game)
   end
 
-  def play(%__MODULE__{winning_number: n, guesses: [n | _t] = gs}) do
+  def play(%__MODULE__{winning_number: winning_number, guesses: [winning_number | _t] = guesses}) do
     IO.puts("""
-    #{IO.ANSI.light_green()} You won in #{length(gs)} #{if length(gs) == 1, do: "guess!", else: "guesses!"}
+    #{IO.ANSI.light_green()} You won in #{length(guesses)} #{if length(guesses) == 1, do: "guess!", else: "guesses!"}
     """)
 
     play_again()
@@ -40,22 +40,22 @@ defmodule Games.GuessingGame do
    play_again()
   end
 
-  def play(%__MODULE__{winning_number: n, guesses: [g | _t] = gs} = game) when g > n do
+  def play(%__MODULE__{winning_number: winning_number, guesses: [guess | _t] = guesses} = game) when guess > winning_number do
     IO.puts("""
     #{IO.ANSI.magenta()} Guess is greater than winning number.
-    Here are your previous guesses #{Enum.join(gs, ", ")}.
-    #{guesses_left(gs)}
+    Here are your previous guesses #{Enum.join(guesses, ", ")}.
+    #{guesses_left(guesses)}
     """)
 
     game = %{game | guesses: [guess() | game.guesses]}
     play(game)
   end
 
-  def play(%__MODULE__{winning_number: n, guesses: [g | _t] = gs} = game) when g < n do
+  def play(%__MODULE__{winning_number: winning_number, guesses: [guess | _t] = guesses} = game) when guess < winning_number do
     IO.puts("""
     #{IO.ANSI.magenta()} Guess is less than winning number.
-    Here are your previous guesses: [#{Enum.join(gs, ", ")}].
-    #{guesses_left(gs)}
+    Here are your previous guesses: [#{Enum.join(guesses, ", ")}].
+    #{guesses_left(guesses)}
     """)
 
     game = %{game | guesses: [guess() | game.guesses]}
