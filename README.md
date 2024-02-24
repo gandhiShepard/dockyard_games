@@ -1,7 +1,6 @@
 # Games
-Dockyard solution: https://github.com/DockYard-Academy/curriculum/tree/main/example_projects/games
-
-Curriculum-2.0.0: /exercises/games_guessing_game.livemd
+Dockyard Project: https://github.com/DockYard-Academy/curriculum/blob/main/exercises/games_guessing_game.livemd
+Dockyard's Solution: https://github.com/DockYard-Academy/curriculum/tree/main/example_projects/games
 
 I can see that this solution uses a GenServer, but this Games project hasn't reached OTP yet. So, I can see a need to refactor for using OTP later. 
 
