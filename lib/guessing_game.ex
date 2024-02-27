@@ -19,6 +19,7 @@ defmodule Games.GuessingGame do
     }
   end
 
+  # PUL: Try to have fewer clauses for play, e.g. by factoring out the concern of evaluating the guess
   @spec play(GuessingGame.t) :: GuessingGame.t
   def play(game \\ new())
   def play(%__MODULE__{guesses: []} = game) do
