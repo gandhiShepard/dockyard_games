@@ -9,3 +9,6 @@ GuessingGame should prompt the user to guess a number between 1 and 10.
 
 ## Rock Paper Scissors
 In your existing Games project, you're going to create a rock paper scissors game where players will play against an AI which randomly chooses rock, paper, or scissors.
+
+## Wordle
+You're going to create a full test suite for the wordle game. 

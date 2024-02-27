@@ -1,7 +1,7 @@
 # aliases for module usage
 # import Ecto.Query
 
-alias Games.{GuessingGame, RockPaperScissors}
+alias Games.{GuessingGame, RockPaperScissors, Wordle}
 
 # Custom IEX
 # https://github.com/blackode/elixir-tips/blob/master/part1.md
