@@ -6,6 +6,10 @@ defmodule GuessingGameTest do
 
   alias Games.GuessingGame
 
+  # Pul: Now the tests get even fewer... That is no good sign
+  # Bad testability could indicate, that you haven't separated the concerns clearly enough
+  # For example: Shouldn't the game itself be a functional abstraction which could be unit-tested without IO?
+  # That would also help the design of your solution overall
   test "creates new Guessing Game struct" do
     assert %GuessingGame{guesses: [], winning_number: _random_number} = GuessingGame.new()
   end

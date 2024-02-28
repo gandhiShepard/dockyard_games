@@ -19,7 +19,8 @@ defmodule Games.GuessingGame do
     }
   end
 
-  # PUL: Try to have fewer clauses for play, e.g. by factoring out the concern of evaluating the guess
+  # PUL: This is better, but still the main game loop (which is kind like a REPL, is unclear.
+  # It would be better to have here the overview: make_a_guess, evaluate the guess, print the overview, loop to next guess or play_again
   @spec play(GuessingGame.t) :: {GuessingGame.t, {:ok, integer} | {:error, String.t}}
   def play(game \\ new()) do
     guess =
@@ -34,6 +35,8 @@ defmodule Games.GuessingGame do
     end
   end
 
+  # PUL: Is this correct here? What if the last guess would we the winning one? But surely you have a test for that case ;-)
+  # Also: You mixing several concerns (evaluating the guess, adding it to the game, detecting the end of game) in one function
   def handle_guess(%__MODULE__{guesses: guesses}, {:ok, guess}) when length([guess | guesses]) == 5 do
     IO.puts("#{IO.ANSI.red()} Sorry, you lost! You ran out of guesses!")
 
@@ -48,6 +51,7 @@ defmodule Games.GuessingGame do
     play_again()
   end
 
+  # The number of left guesses shown is off by one
   def handle_guess(%__MODULE__{winning_number: winning_number, guesses: guesses} = game, {:ok, guess}) do
     position = if guess > winning_number, do: "greater", else: "less"
 
@@ -73,6 +77,9 @@ defmodule Games.GuessingGame do
     "You have #{5 - guesses_left} #{if guesses_left == 1, do: "guess", else: "guesses"} left, try again."
   end
 
+  # Pul: It would be better, if this would just ask the question and return the result.
+  # What happens in the third case? Shouldn't it loop?
+  # What happens with the user feedback anyway? It looks as if it should be output, but that happens nowhere.
   defp play_again do
     play_again = IO.gets("#{IO.ANSI.blue()}Do you want to play again? Enter Y for yes or N for no. ")
     case String.trim(String.upcase(play_again)) do
