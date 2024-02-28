@@ -20,14 +20,27 @@ defmodule Games.GuessingGame do
   end
 
   # PUL: Try to have fewer clauses for play, e.g. by factoring out the concern of evaluating the guess
-  @spec play(GuessingGame.t) :: GuessingGame.t
-  def play(game \\ new())
-  def play(%__MODULE__{guesses: []} = game) do
-    game = %{game | guesses: [guess() | game.guesses]}
-    play(game)
+  @spec play(GuessingGame.t) :: {GuessingGame.t, {:ok, integer} | {:error, String.t}}
+  def play(game \\ new()) do
+    guess =
+      IO.gets("#{IO.ANSI.magenta_background()} Guess a number between 1 and 10:#{IO.ANSI.reset()} ")
+      |> String.trim()
+
+    case valid_guess?(guess) do
+      true ->
+        handle_guess(game, {:ok, String.to_integer(guess)})
+      false ->
+        handle_guess(game, {:error, "invalid input"})
+    end
   end
 
-  def play(%__MODULE__{winning_number: winning_number, guesses: [winning_number | _t] = guesses}) do
+  def handle_guess(%__MODULE__{guesses: guesses}, {:ok, guess}) when length([guess | guesses]) == 5 do
+    IO.puts("#{IO.ANSI.red()} Sorry, you lost! You ran out of guesses!")
+
+    play_again()
+  end
+
+  def handle_guess(%__MODULE__{winning_number: winning_number, guesses: guesses}, {:ok, winning_number}) do
     IO.puts("""
     #{IO.ANSI.light_green()} You won in #{length(guesses)} #{if length(guesses) == 1, do: "guess!", else: "guesses!"}
     """)
@@ -35,47 +48,25 @@ defmodule Games.GuessingGame do
     play_again()
   end
 
-  def play(%__MODULE__{guesses: guesses}) when length(guesses) == 5 do
-   IO.puts("#{IO.ANSI.red()} Sorry, you lost! You ran out of guesses!")
+  def handle_guess(%__MODULE__{winning_number: winning_number, guesses: guesses} = game, {:ok, guess}) do
+    position = if guess > winning_number, do: "greater", else: "less"
 
-   play_again()
-  end
-
-  def play(%__MODULE__{winning_number: winning_number, guesses: [guess | _t] = guesses} = game) when guess > winning_number do
     IO.puts("""
-    #{IO.ANSI.magenta()} Guess is greater than winning number.
-    Here are your previous guesses #{Enum.join(guesses, ", ")}.
+    #{IO.ANSI.magenta()} Guess is #{position} than winning number.
+    Here are your previous guesses #{Enum.join([guess | guesses], ", ")}.
     #{guesses_left(guesses)}
     """)
 
-    game = %{game | guesses: [guess() | game.guesses]}
+    game = %{game | guesses: [guess | game.guesses]}
     play(game)
   end
 
-  def play(%__MODULE__{winning_number: winning_number, guesses: [guess | _t] = guesses} = game) when guess < winning_number do
-    IO.puts("""
-    #{IO.ANSI.magenta()} Guess is less than winning number.
-    Here are your previous guesses: [#{Enum.join(guesses, ", ")}].
-    #{guesses_left(guesses)}
-    """)
-
-    game = %{game | guesses: [guess() | game.guesses]}
+  def handle_guess(%__MODULE__{} = game, {:error, _msg}) do
+    IO.puts("That's not a number fool!\n")
     play(game)
   end
 
-  @spec guess :: integer
-  def guess do
-    name_input = IO.gets("#{IO.ANSI.blue()} Guess a number between 1 and 10: ")
-    case String.match?(name_input, ~r/([0-9]{1,2})/) do
-      true ->
-        name_input
-        |> String.trim()
-        |> String.to_integer()
-      false ->
-        IO.puts("That's not a number fool!\n")
-        guess()
-    end
-  end
+  defp valid_guess?(guess), do: String.match?(guess, ~r/([0-9]{1,2})/)
 
   defp guesses_left(list) do
     guesses_left = length(list)
