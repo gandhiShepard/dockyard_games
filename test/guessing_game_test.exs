@@ -32,42 +32,27 @@ defmodule GuessingGameTest do
 
 
     describe "evaluate/2" do
-      test "sets :guessed to :correct, if given the winning number" do
+      setup do
         game = %GuessingGame{
           winning_number: 5,
           guess_status: nil,
           guesses: []
         }
+
+        [game: game]
+      end
+
+      test "sets :guess_status to :correct, if given the winning number", %{game: game} do
         assert %GuessingGame{guess_status: :correct} = GuessingGame.evaluate_guess("5\n", game)
       end
 
-      test "sets :guessed to :not_correct, if given a non-winning number" do
-        game = %GuessingGame{
-          winning_number: 5,
-          guess_status: nil,
-          guesses: []
-        }
+      test "sets :guess_status to :not_correct, if given a non-winning number", %{game: game} do
         assert %GuessingGame{guess_status: :not_correct} = GuessingGame.evaluate_guess("1\n", game)
       end
 
-      test "sets :guess_status to :invalid_input, if given a letter" do
-        game = %GuessingGame{
-          winning_number: 5,
-          guess_status: nil,
-          guesses: []
-        }
+      test "sets :guess_status to :invalid_input, if given a letter", %{game: game} do
         assert %GuessingGame{guess_status: :invalid_input} = GuessingGame.evaluate_guess("a\n", game)
       end
 
     end
-
-    # def evaluate_guess(guess, game) do
-    #   case Integer.parse(guess) do
-    #     {int, _} when int == game.winning_number -> %{game | guess_status: :correct}
-    #     {int, _} ->  %{game | guess_status: :not_correct, guesses: [int | game.guesses]}
-    #     :error ->  %{game | guess_status: :invalid_input}
-    #   end
-    # end
-
-
 end
