@@ -1,6 +1,6 @@
 defmodule RockPaperScissorsTest do
   use ExUnit.Case
-  import ExUnit.CaptureIO
+  # import ExUnit.CaptureIO
 
   alias Games.RockPaperScissors
 
