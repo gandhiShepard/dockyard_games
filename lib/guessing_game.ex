@@ -49,7 +49,7 @@ defmodule Games.GuessingGame do
   end
 
   def print_result(%__MODULE__{guess_status: :not_correct, guesses: [latest_guess | _]} = game) do
-    IO.puts("Nope! Your guess is to #{if latest_guess > game.winning_number, do: "high", else: "low"}.")
+    IO.puts("Nope! Your guess is too #{if latest_guess > game.winning_number, do: "high", else: "low"}.")
     game
   end
 
