@@ -48,8 +48,8 @@ defmodule GuessingGameTest do
       [game: game]
     end
 
-    test "sets :guess_status to :correct, when given the winning number", %{game: game} do
-      assert %GuessingGame{guess_status: :correct} = GuessingGame.evaluate_guess("5\n", game)
+    test "sets :guess_status to :win, when given the winning number", %{game: game} do
+      assert %GuessingGame{guess_status: :win} = GuessingGame.evaluate_guess("5\n", game)
     end
 
     test "sets :guess_status to :not_correct, when given a non-winning number", %{game: game} do
@@ -61,18 +61,41 @@ defmodule GuessingGameTest do
     end
   end
 
+  test "sets :guess_status to :lose, when 5 guesses are made incorrectly" do
+    game = %GuessingGame{
+      winning_number: 10,
+      guess_status: nil,
+      guesses: [1, 2, 3, 4]
+    }
+    assert %GuessingGame{guess_status: :lose} = GuessingGame.evaluate_guess("5\n", game)
+  end
+
+
   describe "print_result/1" do
-    test "should print 'You WON!' when :guess_status is :correct" do
+    test "should print 'You WON!' when :guess_status is :win" do
       game = %GuessingGame{
         winning_number: 5,
-        guess_status: :correct,
+        guess_status: :win,
         guesses: []
       }
 
       assert capture_io(fn ->
         GuessingGame.print_result(game)
-      end) == "You WON! 5 is the winning number.\n"
+      end) =~ "You WON! 5 is the winning number."
     end
+
+    test "should print 'You LOSE!' when :guess_status is :lose" do
+      game = %GuessingGame{
+        winning_number: 5,
+        guess_status: :lose,
+        guesses: []
+      }
+
+      assert capture_io(fn ->
+        GuessingGame.print_result(game)
+      end) =~ "You LOSE!"
+    end
+
 
 
     test "should print 'Nope! Your guess is too low.' when :guess_status is :not_correct" do
@@ -84,7 +107,7 @@ defmodule GuessingGameTest do
 
       assert capture_io(fn ->
         GuessingGame.print_result(game)
-      end) == "Nope! Your guess is too low.\n"
+      end) =~ "Nope! Your guess is too low."
     end
 
     test "should print 'Nope! Your guess is too high.' when :guess_status is :not_correct" do
@@ -96,7 +119,7 @@ defmodule GuessingGameTest do
 
       assert capture_io(fn ->
         GuessingGame.print_result(game)
-      end) == "Nope! Your guess is too high.\n"
+      end) =~ "Nope! Your guess is too high."
     end
 
     test "should print 'Invalid input buddy!' when :guess_status is :not_correct" do
@@ -108,7 +131,7 @@ defmodule GuessingGameTest do
 
       assert capture_io(fn ->
         GuessingGame.print_result(game)
-      end) == "Invalid input buddy!\n"
+      end) =~ "Invalid input buddy!"
     end
   end
 end

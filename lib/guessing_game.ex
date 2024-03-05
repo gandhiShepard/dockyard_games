@@ -6,7 +6,7 @@ defmodule Games.GuessingGame do
   """
   @type t :: %__MODULE__{
     winning_number: 1..10,
-    guess_status: nil | :correct | :not_correct | :invalid_input,
+    guess_status: nil | :win | :not_correct | :invalid_input | :lose,
     guesses: [non_neg_integer]
   }
 
@@ -24,7 +24,7 @@ defmodule Games.GuessingGame do
 
   def play(game \\ new())
 
-  def play(%__MODULE__{guess_status: :correct} = _game), do: Games.main()
+  def play(%__MODULE__{guess_status: status} = _game) when status in [:win, :lose], do: Games.main()
 
   def play(game) do
     guess_prompt()
@@ -37,19 +37,25 @@ defmodule Games.GuessingGame do
 
   def evaluate_guess(guess, game) do
     case Integer.parse(guess) do
-      {int, _} when int == game.winning_number -> %{game | guess_status: :correct}
+      {int, _} when int == game.winning_number -> %{game | guess_status: :win}
+      {_int, _} when length(game.guesses) == 4 ->  %{game | guess_status: :lose}
       {int, _} ->  %{game | guess_status: :not_correct, guesses: [int | game.guesses]}
       :error ->  %{game | guess_status: :invalid_input}
     end
   end
 
-  def print_result(%__MODULE__{guess_status: :correct} = game) do
-    IO.puts("You WON! #{game.winning_number} is the winning number.")
+  def print_result(%__MODULE__{guess_status: :win} = game) do
+    IO.puts("#{IO.ANSI.green()}You WON! #{game.winning_number} is the winning number.#{IO.ANSI.reset()}")
+    game
+  end
+
+  def print_result(%__MODULE__{guess_status: :lose} = game) do
+    IO.puts("#{IO.ANSI.red}You LOSE! The winning number is #{game.winning_number}#{IO.ANSI.reset()}")
     game
   end
 
   def print_result(%__MODULE__{guess_status: :not_correct, guesses: [latest_guess | _]} = game) do
-    IO.puts("Nope! Your guess is too #{if latest_guess > game.winning_number, do: "high", else: "low"}.")
+    IO.puts("#{IO.ANSI.yellow}Nope! Your guess is too #{if latest_guess > game.winning_number, do: "high", else: "low"}.#{IO.ANSI.reset()}")
     game
   end
 
